@@ -31,6 +31,28 @@ goal = MoveBaseGoal()
 goal.target_pose.header.frame_id = "map"
 goal.target_pose.header.stamp = rospy.Time.now()
 
+goal.target_pose.pose.position.x = -1.29
+goal.target_pose.pose.position.y = -1.56
+goal.target_pose.pose.position.z = 0.0
+goal.target_pose.pose.orientation.x = 0.0
+goal.target_pose.pose.orientation.y = 0.0
+goal.target_pose.pose.orientation.w = -0.41
+goal.target_pose.pose.orientation.z = -0.41
+
+navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
+finish = navclient.wait_for_result()
+
+goal.target_pose.pose.position.x = 0.20
+goal.target_pose.pose.position.y = -1.58
+goal.target_pose.pose.position.z = 0.0
+goal.target_pose.pose.orientation.x = 0.0
+goal.target_pose.pose.orientation.y = 0.0
+goal.target_pose.pose.orientation.w = 0.35
+goal.target_pose.pose.orientation.z = 0.35
+
+navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
+finish = navclient.wait_for_result()
+
 goal.target_pose.pose.position.x = 0.49
 goal.target_pose.pose.position.y = -0.65
 goal.target_pose.pose.position.z = 0.0
