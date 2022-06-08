@@ -52,6 +52,7 @@ import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
 
+
 try:
     from math import pi, tau, dist, fabs, cos
 except:  # For Python 2 compatibility
@@ -211,27 +212,57 @@ class MoveGroupPythonInterfaceTutorial(object):
         # For testing:
         current_joints = move_group.get_current_joint_values()
         return all_close(joint_goal, current_joints, 0.01)
+    def go_to_initial_state(self):
+        # Copy class variables to local variables to make the web tutorials more clear.
+        # In practice, you should use the class variables directly unless you have a good
+        # reason not to.
+        move_group = self.move_group
+
+        ## BEGIN_SUB_TUTORIAL plan_to_joint_state
+        ##
+        ## Planning to a Joint Goal
+        ## ^^^^^^^^^^^^^^^^^^^^^^^^
+        ## The Panda's zero configuration is at a `singularity <https://www.quora.com/Robotics-What-is-meant-by-kinematic-singularity>`_, so the first
+        ## thing we want to do is move it to a slightly better configuration.
+        ## We use the constant `tau = 2*pi <https://en.wikipedia.org/wiki/Turn_(angle)#Tau_proposals>`_ for convenience:
+        # We get the joint values from the group and change some of the values:
+        joint_goal = move_group.get_current_joint_values()
+        print(joint_goal)
+        # joint_goal[0] = 0
+        # joint_goal[1] = -tau / 8
+        # joint_goal[2] = 0
+        # joint_goal[3] = -tau / 4
+        joint_goal[0] = 0.0
+        joint_goal[1] = 0.0
+        joint_goal[2] = 0.0
+        joint_goal[3] = 0.0
+        # joint_goal[4] = 0.0
+        # joint_goal[5] = tau / 6  # 1/6 of a turn
+        # joint_goal[6] = 0
+
+        # The go command can be called with joint values, poses, or without any
+        # parameters if you have already set the pose or joint target for the group
+        move_group.go(joint_goal, wait=True)
+
+        # Calling ``stop()`` ensures that there is no residual movement
+        move_group.stop()
+
+        ## END_SUB_TUTORIAL
+
+        # For testing:
+        current_joints = move_group.get_current_joint_values()
+        return all_close(joint_goal, current_joints, 0.01)
 
 
 def main():
     try:
-        print("")
-        print("----------------------------------------------------------")
-        print("Welcome to the MoveIt MoveGroup Python Interface Tutorial")
-        print("----------------------------------------------------------")
-        print("Press Ctrl-D to exit at any time")
-        print("")
-        input(
-            "============ Press `Enter` to begin the tutorial by setting up the moveit_commander ..."
-        )
         tutorial = MoveGroupPythonInterfaceTutorial()
-
-        input(
-            "============ Press `Enter` to execute a movement using a joint state goal ..."
-        )
+        # tutorial.go_to_joint_state()
         tutorial.go_to_joint_state()
-        
-        print("============ Python tutorial demo complete!")
+        rospy.sleep(1)
+        tutorial.go_to_initial_state()
+        print("Tutorial finished...")
+
     except rospy.ROSInterruptException:
         return
     except KeyboardInterrupt:

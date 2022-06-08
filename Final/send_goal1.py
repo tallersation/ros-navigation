@@ -3,7 +3,9 @@
 import rospy
 import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+import os
 
+from cubeY import Follower
 #Callback definition
 
 def active_cb(extra):
@@ -21,7 +23,7 @@ def done_cb(status, result):
 		rospy.loginfo("Goal aborted")
 
 rospy.init_node("send_goal")
-
+follower = Follower()
 navclient = actionlib.SimpleActionClient('move_base',MoveBaseAction)
 navclient.wait_for_server()
 
@@ -31,13 +33,13 @@ goal = MoveBaseGoal()
 goal.target_pose.header.frame_id = "map"
 goal.target_pose.header.stamp = rospy.Time.now()
 
-goal.target_pose.pose.position.x = -1.29
-goal.target_pose.pose.position.y = -1.56
+goal.target_pose.pose.position.x = -1.05
+goal.target_pose.pose.position.y = -1.70
 goal.target_pose.pose.position.z = 0.0
 goal.target_pose.pose.orientation.x = 0.0
 goal.target_pose.pose.orientation.y = 0.0
-goal.target_pose.pose.orientation.w = -0.41
-goal.target_pose.pose.orientation.z = -0.41
+goal.target_pose.pose.orientation.w = 1
+goal.target_pose.pose.orientation.z = -1.1
 
 navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
 finish = navclient.wait_for_result()
@@ -47,8 +49,8 @@ goal.target_pose.pose.position.y = -1.58
 goal.target_pose.pose.position.z = 0.0
 goal.target_pose.pose.orientation.x = 0.0
 goal.target_pose.pose.orientation.y = 0.0
-goal.target_pose.pose.orientation.w = 0.35
-goal.target_pose.pose.orientation.z = 0.35
+goal.target_pose.pose.orientation.w = -0.35
+goal.target_pose.pose.orientation.z = -0.35
 
 navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
 finish = navclient.wait_for_result()
@@ -68,3 +70,4 @@ if not finish:
 	rospy.logerr("Action server not available")
 else:
 	rospy.loginfo( navclient.get_result())
+	os.system('python3 moveit2.py && python3 send_goal1-1.py')
